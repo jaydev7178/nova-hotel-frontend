@@ -13,112 +13,319 @@ export class ProductService {
   private mockProducts: Product[] = [
     {
       id: '1',
-      name: 'Sandalwood Collection - Shampoo',
-      description: 'Luxurious wall-mounted shampoo infused with warm, woody sandalwood aroma. Perfect for modern hotels seeking elegance and convenience.',
-      price: 12.99,
+      name: 'Body Wash',
+      description: 'Luxurious body wash with gentle cleansing formula, perfect for hotel guests seeking premium skincare.',
+      price: 8.99,
       images: [
-        'assets/images/sandalwood-shampoo-1.jpg',
-        'assets/images/sandalwood-shampoo-2.jpg'
+        'assets/images/body-wash-1.jpg',
+        'assets/images/body-wash-2.jpg'
       ],
       category: 'Toiletries',
       features: [
-        'Refillable 360 ml bottle',
-        'Wall-mounted locking design',
-        'English & French bilingual labels',
-        'Premium sandalwood fragrance',
-        'Eco-friendly & leak-proof pump'
+        'Gentle cleansing formula',
+        'Moisturizing properties',
+        'Fresh fragrance',
+        'Suitable for all skin types',
+        'Eco-friendly packaging'
+      ],
+      stock: 200,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      specifications: {
+        capacity: '250ml',
+        fragrance: 'Fresh',
+        design: 'Hotel Standard'
+      }
+    },
+    {
+      id: '2',
+      name: 'Shampoo',
+      description: 'Professional-grade shampoo designed for luxury hotels, providing excellent cleansing and conditioning.',
+      price: 9.99,
+      images: [
+        'assets/images/shampoo-1.jpg',
+        'assets/images/shampoo-2.jpg'
+      ],
+      category: 'Toiletries',
+      features: [
+        'Professional-grade formula',
+        'Deep cleansing action',
+        'Suitable for all hair types',
+        'Premium fragrance',
+        'Easy-to-use pump dispenser'
+      ],
+      stock: 180,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      specifications: {
+        capacity: '250ml',
+        fragrance: 'Professional',
+        design: 'Pump Dispenser'
+      }
+    },
+    {
+      id: '3',
+      name: 'Hand Wash',
+      description: 'Antibacterial hand wash with moisturizing properties, essential for hotel bathroom amenities.',
+      price: 7.99,
+      images: [
+        'assets/images/hand-wash-1.jpg',
+        'assets/images/hand-wash-2.jpg'
+      ],
+      category: 'Toiletries',
+      features: [
+        'Antibacterial formula',
+        'Moisturizing properties',
+        'Gentle on hands',
+        'Fresh, clean fragrance',
+        'Easy-to-use dispenser'
       ],
       stock: 150,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
       specifications: {
-        capacity: '360ml',
-        fragrance: 'Sandalwood',
-        language: 'English & French',
-        design: 'Wall-mounted Locking'
+        capacity: '250ml',
+        fragrance: 'Clean',
+        design: 'Wall Mount'
       }
     },
     {
-      id: '2',
-      name: 'Sandalwood Collection - Shower Gel',
-      description: 'Rich shower gel with sandalwood essence, designed for luxury hospitality environments.',
-      price: 11.99,
+      id: '4',
+      name: 'Conditioner',
+      description: 'Rich conditioner for silky smooth hair, designed to complement our shampoo for complete hair care.',
+      price: 10.99,
       images: [
-        'assets/images/sandalwood-gel-1.jpg',
-        'assets/images/sandalwood-gel-2.jpg'
+        'assets/images/conditioner-1.jpg',
+        'assets/images/conditioner-2.jpg'
       ],
       category: 'Toiletries',
       features: [
-        'Refillable 360 ml bottle',
-        'Wall-mounted locking design',
-        'English & French bilingual labels',
-        'Premium sandalwood fragrance',
-        'Eco-friendly & leak-proof pump'
+        'Rich conditioning formula',
+        'Silky smooth results',
+        'Suitable for all hair types',
+        'Complementary fragrance',
+        'Professional packaging'
       ],
-      stock: 120,
+      stock: 160,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
       specifications: {
-        capacity: '360ml',
-        fragrance: 'Sandalwood',
-        language: 'English & French',
-        design: 'Wall-mounted Locking'
+        capacity: '250ml',
+        fragrance: 'Professional',
+        design: 'Pump Dispenser'
       }
     },
     {
-      id: '3',
-      name: 'Sandalwood Collection - Conditioner',
-      description: 'Nourishing conditioner with sandalwood extract for silky smooth hair.',
-      price: 13.99,
+      id: '5',
+      name: 'Body Lotion',
+      description: 'Moisturizing body lotion with vitamin E, providing long-lasting hydration for hotel guests.',
+      price: 11.99,
       images: [
-        'assets/images/sandalwood-conditioner-1.jpg',
-        'assets/images/sandalwood-conditioner-2.jpg'
+        'assets/images/body-lotion-1.jpg',
+        'assets/images/body-lotion-2.jpg'
       ],
       category: 'Toiletries',
       features: [
-        'Refillable 360 ml bottle',
-        'Wall-mounted locking design',
-        'English & French bilingual labels',
-        'Premium sandalwood fragrance',
-        'Eco-friendly & leak-proof pump'
+        'Vitamin E enriched',
+        'Long-lasting hydration',
+        'Light, non-greasy formula',
+        'Pleasant fragrance',
+        'Fast-absorbing'
+      ],
+      stock: 140,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      specifications: {
+        capacity: '200ml',
+        fragrance: 'Light',
+        design: 'Pump Bottle'
+      }
+    },
+    {
+      id: '6',
+      name: 'Shaving Kit',
+      description: 'Complete shaving kit including razor, shaving cream, and after-shave lotion for gentlemen.',
+      price: 15.99,
+      images: [
+        'assets/images/shaving-kit-1.jpg',
+        'assets/images/shaving-kit-2.jpg'
+      ],
+      category: 'Toiletries',
+      features: [
+        'Disposable razor included',
+        'Shaving cream',
+        'After-shave lotion',
+        'Compact travel case',
+        'Premium quality'
       ],
       stock: 100,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
       specifications: {
-        capacity: '360ml',
-        fragrance: 'Sandalwood',
-        language: 'English & French',
-        design: 'Wall-mounted Locking'
+        material: 'Disposable',
+        design: 'Travel Kit'
       }
     },
     {
-      id: '4',
-      name: 'Luxury Bath Towel Set',
-      description: 'Premium cotton bath towels with elegant embroidery for upscale hotel rooms.',
-      price: 45.99,
+      id: '7',
+      name: 'Vanity Kit',
+      description: 'Comprehensive vanity kit with essential personal care items for hotel guests.',
+      price: 12.99,
       images: [
-        'assets/images/towel-set-1.jpg',
-        'assets/images/towel-set-2.jpg'
+        'assets/images/vanity-kit-1.jpg',
+        'assets/images/vanity-kit-2.jpg'
       ],
-      category: 'Bathroom',
+      category: 'Toiletries',
       features: [
-        '100% Egyptian cotton',
-        'Premium quality construction',
-        'Elegant hotel embroidery',
-        'Multiple sizes included',
-        'Easy care instructions'
+        'Multiple personal care items',
+        'Convenient packaging',
+        'Travel-friendly',
+        'Premium quality',
+        'Complete set'
       ],
-      stock: 75,
+      stock: 120,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
       specifications: {
-        material: '100% Egyptian Cotton',
-        design: 'Hotel Embroidery'
+        material: 'Multiple',
+        design: 'Complete Kit'
+      }
+    },
+    {
+      id: '8',
+      name: 'Shower Cap',
+      description: 'Waterproof shower cap to protect hair during showers, essential hotel amenity.',
+      price: 3.99,
+      images: [
+        'assets/images/shower-cap-1.jpg',
+        'assets/images/shower-cap-2.jpg'
+      ],
+      category: 'Toiletries',
+      features: [
+        'Waterproof material',
+        'Elastic band',
+        'One-size-fits-all',
+        'Disposable',
+        'Hygienic packaging'
+      ],
+      stock: 300,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      specifications: {
+        material: 'Waterproof Plastic',
+        design: 'Elastic Band'
+      }
+    },
+    {
+      id: '9',
+      name: 'Comb',
+      description: 'Stylish comb for hair care, made from durable materials for hotel use.',
+      price: 4.99,
+      images: [
+        'assets/images/comb-1.jpg',
+        'assets/images/comb-2.jpg'
+      ],
+      category: 'Toiletries',
+      features: [
+        'Durable construction',
+        'Wide-tooth design',
+        'Easy to clean',
+        'Hygienic',
+        'Long-lasting'
+      ],
+      stock: 250,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      specifications: {
+        material: 'Plastic',
+        design: 'Wide-tooth'
+      }
+    },
+    {
+      id: '10',
+      name: 'Soap',
+      description: 'Premium soap bar with gentle cleansing properties and pleasant fragrance.',
+      price: 2.99,
+      images: [
+        'assets/images/soap-1.jpg',
+        'assets/images/soap-2.jpg'
+      ],
+      category: 'Toiletries',
+      features: [
+        'Gentle cleansing',
+        'Moisturizing formula',
+        'Pleasant fragrance',
+        'Long-lasting',
+        'Eco-friendly'
+      ],
+      stock: 400,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      specifications: {
+        material: 'Soap Bar',
+        design: 'Standard Size'
+      }
+    },
+    {
+      id: '11',
+      name: 'Slippers',
+      description: 'Comfortable hotel slippers for guest convenience and comfort.',
+      price: 6.99,
+      images: [
+        'assets/images/slippers-1.jpg',
+        'assets/images/slippers-2.jpg'
+      ],
+      category: 'Bathroom',
+      features: [
+        'Comfortable fit',
+        'Non-slip sole',
+        'Disposable',
+        'One-size-fits-most',
+        'Soft material'
+      ],
+      stock: 200,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      specifications: {
+        material: 'Soft Fabric',
+        design: 'One Size'
+      }
+    },
+    {
+      id: '12',
+      name: 'Bracket',
+      description: 'Wall-mounted bracket for organizing bathroom amenities and toiletries.',
+      price: 8.99,
+      images: [
+        'assets/images/bracket-1.jpg',
+        'assets/images/bracket-2.jpg'
+      ],
+      category: 'Bathroom',
+      features: [
+        'Wall-mounted design',
+        'Durable construction',
+        'Easy installation',
+        'Space-saving',
+        'Rust-resistant'
+      ],
+      stock: 80,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      specifications: {
+        material: 'Stainless Steel',
+        design: 'Wall Mount'
       }
     }
   ];
