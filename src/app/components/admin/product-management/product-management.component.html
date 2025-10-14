@@ -1,0 +1,131 @@
+<!-- Page Header -->
+<div class="page-header mb-4">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h1 class="h3 fw-bold text-dark mb-2">Product Management</h1>
+      <p class="text-muted mb-0">Manage your product catalog and inventory</p>
+    </div>
+    <button class="btn btn-primary">
+      <i class="fas fa-plus me-2"></i>
+      Add New Product
+    </button>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4">
+  <div class="col-lg-8">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text">
+            <i class="fas fa-search"></i>
+          </span>
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="Search products..."
+            [(ngModel)]="searchQuery"
+            (input)="onSearch()">
+        </div>
+      </div>
+      <div class="col-md-4">
+        <select 
+          class="form-select" 
+          [(ngModel)]="selectedCategory"
+          (change)="onCategoryFilter()">
+          <option value="">All Categories</option>
+          <option *ngFor="let category of categories" [value]="category">
+            {{ category }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-outline-secondary w-100" (click)="clearFilters()">
+          <i class="fas fa-times"></i>
+          Clear
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="d-flex justify-content-lg-end">
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-outline-primary active">
+          <i class="fas fa-table"></i>
+        </button>
+        <button type="button" class="btn btn-outline-primary">
+          <i class="fas fa-th-large"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Products Table -->
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive" *ngIf="filteredProducts.length > 0">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of filteredProducts">
+            <td>
+              <div class="d-flex align-items-center">
+                <img [src]="product.images[0]" 
+                     [alt]="product.name" 
+                     class="product-thumb me-3">
+                <div>
+                  <div class="fw-bold">{{ product.name }}</div>
+                  <small class="text-muted">{{ product.description.substring(0, 50) }}...</small>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="badge bg-secondary">{{ product.category }}</span>
+            </td>
+            <td class="fw-bold">${{ product.price | number:'1.2-2' }}</td>
+            <td>
+              <span class="badge" [ngClass]="getStockBadgeClass(product.stock)">
+                {{ product.stock }}
+              </span>
+            </td>
+            <td>
+              <span class="badge bg-success" *ngIf="product.stock > 0">Active</span>
+              <span class="badge bg-danger" *ngIf="product.stock === 0">Out of Stock</span>
+            </td>
+            <td>
+              <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-primary">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-outline-danger">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="text-center py-5" *ngIf="filteredProducts.length === 0">
+      <i class="fas fa-box fa-3x text-muted mb-3"></i>
+      <h5 class="text-muted mb-3">No Products Found</h5>
+      <p class="text-muted">Try adjusting your search criteria or add a new product.</p>
+      <button class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>
+        Add New Product
+      </button>
+    </div>
+  </div>
+</div>

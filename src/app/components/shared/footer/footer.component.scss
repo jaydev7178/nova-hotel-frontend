@@ -1,0 +1,52 @@
+.footer {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  
+  h5, h6 {
+    color: #fff;
+  }
+  
+  .social-links a {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: var(--primary-color);
+      transform: translateY(-2px);
+    }
+  }
+  
+  .contact-info {
+    .fas {
+      width: 20px;
+    }
+  }
+  
+  a {
+    transition: color 0.3s ease;
+    
+    &:hover {
+      color: var(--accent-color) !important;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .footer {
+    .social-links a {
+      width: 35px;
+      height: 35px;
+      line-height: 35px;
+      font-size: 0.9rem;
+    }
+    
+    .contact-info {
+      font-size: 0.9rem;
+    }
+  }
+}

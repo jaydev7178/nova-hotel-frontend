@@ -1,0 +1,215 @@
+<!-- Page Header -->
+<div class="page-header mb-4">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h1 class="h3 fw-bold text-dark mb-2">Order Management</h1>
+      <p class="text-muted mb-0">Manage and track customer orders</p>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-outline-primary">
+        <i class="fas fa-download me-2"></i>
+        Export
+      </button>
+      <button class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>
+        New Order
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4">
+  <div class="col-lg-6">
+    <div class="input-group">
+      <span class="input-group-text">
+        <i class="fas fa-search"></i>
+      </span>
+      <input 
+        type="text" 
+        class="form-control" 
+        placeholder="Search orders...">
+    </div>
+  </div>
+  <div class="col-lg-3">
+    <select class="form-select">
+      <option value="">All Statuses</option>
+      <option value="pending">Pending</option>
+      <option value="confirmed">Confirmed</option>
+      <option value="shipped">Shipped</option>
+      <option value="delivered">Delivered</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
+  </div>
+  <div class="col-lg-3">
+    <input type="date" class="form-control">
+  </div>
+</div>
+
+<div class="row">
+  <!-- Orders List -->
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-body">
+        <div class="table-responsive" *ngIf="orders.length > 0">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Payment</th>
+                <th>Total</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let order of orders" 
+                  [class.table-active]="selectedOrder?.id === order.id"
+                  (click)="selectOrder(order)"
+                  style="cursor: pointer;">
+                <td class="fw-bold">{{ order.id }}</td>
+                <td>
+                  <div>{{ order.customerInfo.firstName }} {{ order.customerInfo.lastName }}</div>
+                  <small class="text-muted">{{ order.customerInfo.email }}</small>
+                </td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <span class="badge badge-sm" [ngClass]="getPaymentStatusBadgeClass(order.paymentInfo?.status)">
+                      {{ order.paymentInfo?.status | titlecase }}
+                    </span>
+                  </div>
+                </td>
+                <td class="fw-bold">${{ order.totalAmount | number:'1.2-2' }}</td>
+                <td>
+                  <div>{{ order.createdAt | date:'short' }}</div>
+                  <small class="text-muted">{{ order.createdAt | date:'medium' }}</small>
+                </td>
+                <td>
+                  <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-outline-success">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-outline-danger">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="text-center py-5" *ngIf="orders.length === 0">
+          <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+          <h5 class="text-muted mb-3">No Orders Found</h5>
+          <p class="text-muted">No orders match your current filters.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Details -->
+  <div class="col-lg-4" *ngIf="selectedOrder">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">Order Details</h5>
+      </div>
+      <div class="card-body">
+        <!-- Customer Info -->
+        <div class="mb-4">
+          <h6 class="fw-bold mb-3">Customer Information</h6>
+          <div class="customer-info">
+            <div class="mb-2">
+              <strong>{{ selectedOrder.customerInfo.firstName }} {{ selectedOrder.customerInfo.lastName }}</strong>
+            </div>
+            <div class="mb-2">{{ selectedOrder.customerInfo.email }}</div>
+            <div class="mb-2">{{ selectedOrder.customerInfo.phone }}</div>
+            <div *ngIf="selectedOrder.customerInfo.company" class="mb-2">
+              {{ selectedOrder.customerInfo.company }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="mb-4">
+          <h6 class="fw-bold mb-3">Order Items</h6>
+          <div class="order-items">
+            <div class="order-item d-flex justify-content-between align-items-start mb-3" 
+                 *ngFor="let item of selectedOrder.items">
+              <div class="flex-grow-1">
+                <div class="d-flex align-items-center">
+                  <img [src]="item.product.images[0]" 
+                       [alt]="item.product.name" 
+                       class="item-thumb me-2">
+                  <div>
+                    <h6 class="mb-1">{{ item.product.name }}</h6>
+                    <small class="text-muted">{{ item.product.description.substring(0, 50) }}...</small>
+                    <div class="mt-1">
+                      <span class="badge bg-secondary me-2">Qty: {{ item.quantity }}</span>
+                      <span class="fw-bold">${{ (item.product.price * item.quantity) | number:'1.2-2' }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+          <h6 class="fw-bold mb-3">Order Summary</h6>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Subtotal:</span>
+            <span>${{ getSubtotal(selectedOrder) | number:'1.2-2' }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Shipping:</span>
+            <span class="text-success">Free</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Tax:</span>
+            <span>${{ getTax(selectedOrder) | number:'1.2-2' }}</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between h5 mb-3">
+            <span class="fw-bold">Total:</span>
+            <span class="fw-bold text-primary">${{ selectedOrder.totalAmount | number:'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <!-- Order Actions -->
+        <div class="order-actions">
+          <div class="d-grid gap-2">
+            <button class="btn btn-success">
+              <i class="fas fa-check me-2"></i>
+              Confirm Order
+            </button>
+            <button class="btn btn-primary">
+              <i class="fas fa-shipping-fast me-2"></i>
+              Ship Order
+            </button>
+            <button class="btn btn-outline-danger">
+              <i class="fas fa-times me-2"></i>
+              Cancel Order
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Order Selected -->
+  <div class="col-lg-4" *ngIf="!selectedOrder">
+    <div class="card">
+      <div class="card-body text-center py-5">
+        <i class="fas fa-mouse-pointer fa-3x text-muted mb-3"></i>
+        <h6 class="text-muted">Select an order to view details</h6>
+        <p class="text-muted small">Click on any order in the list to see its details here.</p>
+      </div>
+    </div>
+  </div>
+</div>

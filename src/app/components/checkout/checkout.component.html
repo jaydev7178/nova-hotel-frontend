@@ -1,0 +1,341 @@
+<div class="container py-5" *ngIf="cartItems.length > 0">
+  <!-- Page Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="h2 fw-bold text-dark mb-2">Checkout</h1>
+      <p class="text-muted mb-0">Complete your order securely</p>
+    </div>
+  </div>
+
+  <form (ngSubmit)="onSubmit()">
+    <div class="row">
+      <!-- Checkout Form -->
+      <div class="col-lg-8">
+        <!-- Customer Information -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="fas fa-user me-2"></i>
+              Customer Information
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="firstName" class="form-label">First Name *</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="firstName"
+                       [(ngModel)]="customerInfo.firstName"
+                       name="firstName"
+                       required>
+              </div>
+              <div class="col-md-6">
+                <label for="lastName" class="form-label">Last Name *</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="lastName"
+                       [(ngModel)]="customerInfo.lastName"
+                       name="lastName"
+                       required>
+              </div>
+              <div class="col-md-6">
+                <label for="email" class="form-label">Email Address *</label>
+                <input type="email" 
+                       class="form-control" 
+                       id="email"
+                       [(ngModel)]="customerInfo.email"
+                       name="email"
+                       required>
+              </div>
+              <div class="col-md-6">
+                <label for="phone" class="form-label">Phone Number *</label>
+                <input type="tel" 
+                       class="form-control" 
+                       id="phone"
+                       [(ngModel)]="customerInfo.phone"
+                       name="phone"
+                       required>
+              </div>
+              <div class="col-12">
+                <label for="company" class="form-label">Company (Optional)</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="company"
+                       [(ngModel)]="customerInfo.company"
+                       name="company">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shipping Address -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="fas fa-map-marker-alt me-2"></i>
+              Shipping Address
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-12">
+                <label for="street" class="form-label">Street Address *</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="street"
+                       [(ngModel)]="customerInfo.address.street"
+                       name="street"
+                       required>
+              </div>
+              <div class="col-md-6">
+                <label for="city" class="form-label">City *</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="city"
+                       [(ngModel)]="customerInfo.address.city"
+                       name="city"
+                       required>
+              </div>
+              <div class="col-md-3">
+                <label for="state" class="form-label">State *</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="state"
+                       [(ngModel)]="customerInfo.address.state"
+                       name="state"
+                       required>
+              </div>
+              <div class="col-md-3">
+                <label for="zipCode" class="form-label">ZIP Code *</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="zipCode"
+                       [(ngModel)]="customerInfo.address.zipCode"
+                       name="zipCode"
+                       required>
+              </div>
+              <div class="col-12">
+                <label for="country" class="form-label">Country *</label>
+                <select class="form-select" 
+                        id="country"
+                        [(ngModel)]="customerInfo.address.country"
+                        name="country"
+                        required>
+                  <option value="United States">United States</option>
+                  <option value="Canada">Canada</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                  <option value="Australia">Australia</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Information -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="fas fa-credit-card me-2"></i>
+              Payment Information
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label">Payment Method *</label>
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <div class="form-check">
+                      <input class="form-check-input" 
+                             type="radio" 
+                             id="creditCard"
+                             [(ngModel)]="paymentInfo.method"
+                             name="paymentMethod"
+                             [value]="'credit_card'"
+                             checked>
+                      <label class="form-check-label" for="creditCard">
+                        <i class="fas fa-credit-card me-2"></i>
+                        Credit Card
+                      </label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check">
+                      <input class="form-check-input" 
+                             type="radio" 
+                             id="bankTransfer"
+                             [(ngModel)]="paymentInfo.method"
+                             name="paymentMethod"
+                             [value]="'bank_transfer'">
+                      <label class="form-check-label" for="bankTransfer">
+                        <i class="fas fa-university me-2"></i>
+                        Bank Transfer
+                      </label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check">
+                      <input class="form-check-input" 
+                             type="radio" 
+                             id="paypal"
+                             [(ngModel)]="paymentInfo.method"
+                             name="paymentMethod"
+                             [value]="'paypal'">
+                      <label class="form-check-label" for="paypal">
+                        <i class="fab fa-paypal me-2"></i>
+                        PayPal
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Credit Card Fields -->
+              <div class="col-12" *ngIf="paymentInfo.method === 'credit_card'">
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label for="cardNumber" class="form-label">Card Number *</label>
+                    <input type="text" 
+                           class="form-control" 
+                           id="cardNumber"
+                           [(ngModel)]="paymentInfo.cardNumber"
+                           name="cardNumber"
+                           placeholder="1234 5678 9012 3456"
+                           maxlength="19">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="expiryDate" class="form-label">Expiry Date *</label>
+                    <input type="text" 
+                           class="form-control" 
+                           id="expiryDate"
+                           [(ngModel)]="paymentInfo.expiryDate"
+                           name="expiryDate"
+                           placeholder="MM/YY"
+                           maxlength="5">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="cvv" class="form-label">CVV *</label>
+                    <input type="text" 
+                           class="form-control" 
+                           id="cvv"
+                           [(ngModel)]="paymentInfo.cvv"
+                           name="cvv"
+                           placeholder="123"
+                           maxlength="4">
+                  </div>
+                  <div class="col-12">
+                    <label for="cardholderName" class="form-label">Cardholder Name *</label>
+                    <input type="text" 
+                           class="form-control" 
+                           id="cardholderName"
+                           [(ngModel)]="paymentInfo.cardholderName"
+                           name="cardholderName"
+                           placeholder="John Doe">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bank Transfer Info -->
+              <div class="col-12" *ngIf="paymentInfo.method === 'bank_transfer'">
+                <div class="alert alert-info">
+                  <h6><i class="fas fa-info-circle me-2"></i>Bank Transfer Instructions</h6>
+                  <p class="mb-2">Please transfer the amount to the following account:</p>
+                  <ul class="mb-0">
+                    <li><strong>Bank:</strong> Nova Hotel Supplies Bank</li>
+                    <li><strong>Account Number:</strong> 1234567890</li>
+                    <li><strong>Routing Number:</strong> 987654321</li>
+                    <li><strong>Reference:</strong> Your order will be processed after payment confirmation</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- PayPal Info -->
+              <div class="col-12" *ngIf="paymentInfo.method === 'paypal'">
+                <div class="alert alert-info">
+                  <h6><i class="fab fa-paypal me-2"></i>PayPal Payment</h6>
+                  <p class="mb-0">You will be redirected to PayPal to complete your payment securely.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Order Summary</h5>
+          </div>
+          <div class="card-body">
+            <!-- Order Items -->
+            <div class="order-items mb-3">
+              <div class="order-item d-flex justify-content-between align-items-center mb-2" 
+                   *ngFor="let item of cartItems">
+                <div class="item-info">
+                  <div class="item-name">{{ item.product.name }}</div>
+                  <small class="text-muted">Qty: {{ item.quantity }}</small>
+                </div>
+                <div class="item-price">
+                  ${{ (item.product.price * item.quantity) | number:'1.2-2' }}
+                </div>
+              </div>
+            </div>
+            
+            <hr>
+            
+            <!-- Order Totals -->
+            <div class="order-totals">
+              <div class="d-flex justify-content-between mb-2">
+                <span>Subtotal:</span>
+                <span>${{ getSubtotal() | number:'1.2-2' }}</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Shipping:</span>
+                <span class="text-success">Free</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Tax:</span>
+                <span>${{ getTax() | number:'1.2-2' }}</span>
+              </div>
+              <hr>
+              <div class="d-flex justify-content-between h5 mb-3">
+                <span class="fw-bold">Total:</span>
+                <span class="fw-bold text-primary">${{ getTotal() | number:'1.2-2' }}</span>
+              </div>
+            </div>
+
+            <!-- Place Order Button -->
+            <button type="submit" 
+                    class="btn btn-primary btn-lg w-100 mb-3">
+              <i class="fas fa-lock me-2"></i>
+              Place Order
+            </button>
+
+            <!-- Security Notice -->
+            <div class="security-notice text-center">
+              <small class="text-muted">
+                <i class="fas fa-shield-alt me-1"></i>
+                Your payment information is secure and encrypted
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Empty Cart Redirect -->
+<div class="container py-5 text-center" *ngIf="cartItems.length === 0">
+  <div class="empty-cart">
+    <i class="fas fa-shopping-cart fa-4x text-muted mb-4"></i>
+    <h3 class="text-muted mb-3">Your cart is empty</h3>
+    <p class="text-muted mb-4">Add some products to your cart before checking out.</p>
+    <a routerLink="/products" class="btn btn-primary btn-lg">
+      <i class="fas fa-shopping-bag me-2"></i>
+      Start Shopping
+    </a>
+  </div>
+</div>

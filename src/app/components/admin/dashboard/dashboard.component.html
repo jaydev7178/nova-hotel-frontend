@@ -1,0 +1,122 @@
+<!-- Dashboard Header -->
+<div class="dashboard-header mb-4">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h1 class="h3 fw-bold text-dark mb-2">Dashboard</h1>
+      <p class="text-muted mb-0">Welcome to Nova Hotel Supplies Admin Panel</p>
+    </div>
+    <div class="dashboard-date">
+      <span class="text-muted">{{ currentDate | date:'fullDate' }}</span>
+    </div>
+  </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-5">
+  <div class="col-lg-3 col-md-6">
+    <div class="stats-card">
+      <div class="stats-icon">
+        <i class="fas fa-shopping-cart fa-2x text-primary"></i>
+      </div>
+      <div class="stats-content">
+        <h3 class="stats-number">{{ totalOrders }}</h3>
+        <p class="stats-label">Total Orders</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-3 col-md-6">
+    <div class="stats-card">
+      <div class="stats-icon">
+        <i class="fas fa-dollar-sign fa-2x text-success"></i>
+      </div>
+      <div class="stats-content">
+        <h3 class="stats-number">${{ totalRevenue | number:'1.2-2' }}</h3>
+        <p class="stats-label">Total Revenue</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-3 col-md-6">
+    <div class="stats-card">
+      <div class="stats-icon">
+        <i class="fas fa-box fa-2x text-info"></i>
+      </div>
+      <div class="stats-content">
+        <h3 class="stats-number">{{ totalProducts }}</h3>
+        <p class="stats-label">Total Products</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-3 col-md-6">
+    <div class="stats-card">
+      <div class="stats-icon">
+        <i class="fas fa-clock fa-2x text-warning"></i>
+      </div>
+      <div class="stats-content">
+        <h3 class="stats-number">{{ pendingOrders }}</h3>
+        <p class="stats-label">Pending Orders</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Orders -->
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">Recent Orders</h5>
+          <a routerLink="/admin/orders" class="btn btn-outline-primary btn-sm">
+            View All Orders
+          </a>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive" *ngIf="orders.length > 0">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let order of orders.slice(0, 5)">
+                <td class="fw-bold">{{ order.id }}</td>
+                <td>
+                  {{ order.customerInfo.firstName }} {{ order.customerInfo.lastName }}
+                </td>
+                <td>
+                  <span class="badge" [ngClass]="getStatusBadgeClass(order.status)">
+                    {{ order.status | titlecase }}
+                  </span>
+                </td>
+                <td class="fw-bold">${{ order.totalAmount | number:'1.2-2' }}</td>
+                <td>{{ order.createdAt | date:'short' }}</td>
+                <td>
+                  <a [routerLink]="['/admin/orders']" 
+                     class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-eye"></i>
+                    View
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="text-center py-4" *ngIf="orders.length === 0">
+          <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+          <p class="text-muted">No orders found</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
