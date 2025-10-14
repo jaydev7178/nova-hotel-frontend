@@ -17,8 +17,7 @@ export class ProductService {
       description: 'Luxurious body wash with gentle cleansing formula, perfect for hotel guests seeking premium skincare.',
       price: 8.99,
       images: [
-        'assets/images/body-wash-1.jpg',
-        'assets/images/body-wash-2.jpg'
+        'assets/images/body-wash.jpg'
       ],
       category: 'Toiletries',
       features: [
@@ -44,8 +43,7 @@ export class ProductService {
       description: 'Professional-grade shampoo designed for luxury hotels, providing excellent cleansing and conditioning.',
       price: 9.99,
       images: [
-        'assets/images/shampoo-1.jpg',
-        'assets/images/shampoo-2.jpg'
+        'assets/images/shampoo.jpg'
       ],
       category: 'Toiletries',
       features: [
@@ -71,8 +69,7 @@ export class ProductService {
       description: 'Antibacterial hand wash with moisturizing properties, essential for hotel bathroom amenities.',
       price: 7.99,
       images: [
-        'assets/images/hand-wash-1.jpg',
-        'assets/images/hand-wash-2.jpg'
+        'assets/images/hand-wash.jpg'
       ],
       category: 'Toiletries',
       features: [
@@ -98,8 +95,7 @@ export class ProductService {
       description: 'Rich conditioner for silky smooth hair, designed to complement our shampoo for complete hair care.',
       price: 10.99,
       images: [
-        'assets/images/conditioner-1.jpg',
-        'assets/images/conditioner-2.jpg'
+        'assets/images/conditioner.jpg'
       ],
       category: 'Toiletries',
       features: [
@@ -125,8 +121,7 @@ export class ProductService {
       description: 'Moisturizing body lotion with vitamin E, providing long-lasting hydration for hotel guests.',
       price: 11.99,
       images: [
-        'assets/images/body-lotion-1.jpg',
-        'assets/images/body-lotion-2.jpg'
+        'assets/images/body-lotion.jpg'
       ],
       category: 'Toiletries',
       features: [
@@ -152,8 +147,7 @@ export class ProductService {
       description: 'Complete shaving kit including razor, shaving cream, and after-shave lotion for gentlemen.',
       price: 15.99,
       images: [
-        'assets/images/shaving-kit-1.jpg',
-        'assets/images/shaving-kit-2.jpg'
+        'assets/images/shaving-kit.jpg'
       ],
       category: 'Toiletries',
       features: [
@@ -178,8 +172,7 @@ export class ProductService {
       description: 'Comprehensive vanity kit with essential personal care items for hotel guests.',
       price: 12.99,
       images: [
-        'assets/images/vanity-kit-1.jpg',
-        'assets/images/vanity-kit-2.jpg'
+        'assets/images/vanity-kit.jpg'
       ],
       category: 'Toiletries',
       features: [
@@ -204,8 +197,7 @@ export class ProductService {
       description: 'Waterproof shower cap to protect hair during showers, essential hotel amenity.',
       price: 3.99,
       images: [
-        'assets/images/shower-cap-1.jpg',
-        'assets/images/shower-cap-2.jpg'
+        'assets/images/shower-cap.jpg'
       ],
       category: 'Toiletries',
       features: [
@@ -230,8 +222,7 @@ export class ProductService {
       description: 'Stylish comb for hair care, made from durable materials for hotel use.',
       price: 4.99,
       images: [
-        'assets/images/comb-1.jpg',
-        'assets/images/comb-2.jpg'
+        'assets/images/comb.jpg'
       ],
       category: 'Toiletries',
       features: [
@@ -256,8 +247,7 @@ export class ProductService {
       description: 'Premium soap bar with gentle cleansing properties and pleasant fragrance.',
       price: 2.99,
       images: [
-        'assets/images/soap-1.jpg',
-        'assets/images/soap-2.jpg'
+        'assets/images/soap.jpg'
       ],
       category: 'Toiletries',
       features: [
@@ -282,8 +272,7 @@ export class ProductService {
       description: 'Comfortable hotel slippers for guest convenience and comfort.',
       price: 6.99,
       images: [
-        'assets/images/slippers-1.jpg',
-        'assets/images/slippers-2.jpg'
+        'assets/images/slippers.jpg'
       ],
       category: 'Bathroom',
       features: [
@@ -308,8 +297,7 @@ export class ProductService {
       description: 'Wall-mounted bracket for organizing bathroom amenities and toiletries.',
       price: 8.99,
       images: [
-        'assets/images/bracket-1.jpg',
-        'assets/images/bracket-2.jpg'
+        'assets/images/bracket.jpg'
       ],
       category: 'Bathroom',
       features: [
