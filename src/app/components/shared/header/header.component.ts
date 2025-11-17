@@ -12,9 +12,9 @@ import { Observable } from 'rxjs';
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
       <div class="container">
         <!-- Brand -->
-        <a class="navbar-brand fw-bold" routerLink="/home">
-          <i class="fas fa-crown me-2 text-primary"></i>
-          Nova Hotel Supplies
+        <a class="navbar-brand fw-bold d-flex align-items-center" routerLink="/home">
+          <img src="assets/images/WebsiteIcon.png" alt="Nova Hotel Supplies" class="logo me-1" />
+          <span class="brand-text">Nova Hotel Supplies</span>
         </a>
 
         <!-- Mobile toggle button -->
