@@ -108,3 +108,13 @@ export enum DeliveryStatus {
   DELIVERED = 'delivered',
   FAILED = 'failed'
 }
+
+export interface PagedResponse<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  number: number;      // current page
+  size: number;        // page size
+  first: boolean;
+  last: boolean;
+}

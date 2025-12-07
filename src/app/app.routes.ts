@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -19,12 +20,18 @@ export const routes: Routes = [
     loadComponent: () => import('./components/product-detail/product-detail.component').then(m => m.ProductDetailComponent)
   },
   {
+    path: 'login',
+    loadComponent: () => import('./components/login/login.component').then(m => m.LoginComponent)
+  },
+  {
     path: 'cart',
-    loadComponent: () => import('./components/shopping-cart/shopping-cart.component').then(m => m.ShoppingCartComponent)
+    loadComponent: () => import('./components/shopping-cart/shopping-cart.component').then(m => m.ShoppingCartComponent),
+    canActivate: [AuthGuard]
   },
   {
     path: 'checkout',
-    loadComponent: () => import('./components/checkout/checkout.component').then(m => m.CheckoutComponent)
+    loadComponent: () => import('./components/checkout/checkout.component').then(m => m.CheckoutComponent),
+    canActivate: [AuthGuard]
   },
   {
     path: 'order-confirmation/:id',
@@ -33,6 +40,8 @@ export const routes: Routes = [
   {
     path: 'admin',
     loadComponent: () => import('./components/admin/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent),
+    canActivate: [AuthGuard],
+    data: { role: 'admin' },
     children: [
       {
         path: '',
@@ -41,19 +50,27 @@ export const routes: Routes = [
       },
       {
         path: 'dashboard',
-        loadComponent: () => import('./components/admin/dashboard/dashboard.component').then(m => m.DashboardComponent)
+        loadComponent: () => import('./components/admin/dashboard/dashboard.component').then(m => m.DashboardComponent),
+        canActivate: [AuthGuard],
+        data: { role: 'admin' }
       },
       {
         path: 'products',
-        loadComponent: () => import('./components/admin/product-management/product-management.component').then(m => m.ProductManagementComponent)
+        loadComponent: () => import('./components/admin/product-management/product-management.component').then(m => m.ProductManagementComponent),
+        canActivate: [AuthGuard],
+        data: { role: 'admin' }
       },
       {
         path: 'orders',
-        loadComponent: () => import('./components/admin/order-management/order-management.component').then(m => m.OrderManagementComponent)
+        loadComponent: () => import('./components/admin/order-management/order-management.component').then(m => m.OrderManagementComponent),
+        canActivate: [AuthGuard],
+        data: { role: 'admin' }
       },
       {
         path: 'approvals',
-        loadComponent: () => import('./components/admin/approval-management/approval-management.component').then(m => m.ApprovalManagementComponent)
+        loadComponent: () => import('./components/admin/approval-management/approval-management.component').then(m => m.ApprovalManagementComponent),
+        canActivate: [AuthGuard],
+        data: { role: 'admin' }
       }
     ]
   },

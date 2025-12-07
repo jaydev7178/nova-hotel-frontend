@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Router } from '@angular/router';
 import { CartItem, Product } from '../models/product.model';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +11,10 @@ export class CartService {
   private cartItems: CartItem[] = [];
   private cartSubject = new BehaviorSubject<CartItem[]>([]);
 
-  constructor() {
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {
     // Load cart from localStorage on initialization
     this.loadCartFromStorage();
   }
@@ -22,7 +27,19 @@ export class CartService {
     return this.cartItems;
   }
 
-  addToCart(product: Product, quantity: number = 1): void {
+  addToCart(product: Product, quantity: number = 1): boolean {
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login'], {
+        queryParams: { returnUrl: '/products' }
+      });
+      return false;
+    }
+    
+    this.addItemToCart(product, quantity);
+    return true;
+  }
+
+  private addItemToCart(product: Product, quantity: number = 1): void {
     const existingItem = this.cartItems.find(item => item.product.id === product.id);
     
     if (existingItem) {

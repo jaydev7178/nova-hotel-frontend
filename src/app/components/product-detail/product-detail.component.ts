@@ -58,8 +58,11 @@ export class ProductDetailComponent implements OnInit {
 
   addToCart(): void {
     if (this.product) {
-      this.cartService.addToCart(this.product, this.quantity);
-      // You could add a toast notification here
+      const success = this.cartService.addToCart(this.product, this.quantity);
+      if (success) {
+        // You could add a toast notification here
+        console.log('Product added to cart');
+      }
     }
   }
 

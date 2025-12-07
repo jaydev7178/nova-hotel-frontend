@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Product, ProductCategory } from '../models/product.model';
+import { environment } from '../../environments/environment';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-  private apiUrl = 'api/products'; // Replace with actual API endpoint
+  private apiUrl = `${environment.apiUrl}/products`;
 
   // Mock data for demonstration
   private mockProducts: Product[] = [
@@ -345,12 +348,67 @@ export class ProductService {
     }
   ];
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
 
   getProducts(): Observable<Product[]> {
-    // In a real application, this would make an HTTP request
-    // return this.http.get<Product[]>(this.apiUrl);
-    return of(this.mockProducts);
+    const token = this.authService.getToken();
+    if (!token) {
+      return of(this.mockProducts);
+    }
+    
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    
+    return this.http.get<any>(`${this.apiUrl}?page=0&size=100&sortBy=name&sortDir=asc`, { headers })
+      .pipe(
+        map(response => {
+          return response.content.map((apiProduct: any) => this.mapApiProductToProduct(apiProduct));
+        })
+      ).pipe(
+        map(products => products.length > 0 ? products : this.mockProducts)
+      );
+  }
+
+  private mapApiProductToProduct(apiProduct: any): Product {
+    return {
+      id: apiProduct.id.toString(),
+      name: apiProduct.name,
+      description: apiProduct.description,
+      price: apiProduct.price,
+      images: apiProduct.imageUrl ? [apiProduct.imageUrl] : ['assets/images/hero-product.jpg'],
+      category: this.getCategoryFromSku(apiProduct.sku),
+      features: this.generateFeaturesFromDescription(apiProduct.description),
+      stock: apiProduct.stockQuantity,
+      isActive: apiProduct.isActive,
+      createdAt: new Date(apiProduct.createdAt),
+      updatedAt: new Date(apiProduct.updatedAt),
+      specifications: {
+        design: 'Hotel Standard'
+      }
+    };
+  }
+
+  private getCategoryFromSku(sku: string): string {
+    if (sku.startsWith('TOI')) return 'Toiletries';
+    if (sku.startsWith('BAT')) return 'Bathroom';
+    if (sku.startsWith('BED')) return 'Bedroom';
+    if (sku.startsWith('KIT')) return 'Kitchen';
+    if (sku.startsWith('CLE')) return 'Cleaning';
+    if (sku.startsWith('OFF')) return 'Office';
+    if (sku.startsWith('MAI')) return 'Maintenance';
+    return 'General';
+  }
+
+  private generateFeaturesFromDescription(description: string): string[] {
+    const features = ['Premium quality', 'Hotel standard', 'Durable construction'];
+    if (description.toLowerCase().includes('heavy-duty')) features.push('Heavy-duty design');
+    if (description.toLowerCase().includes('luxury')) features.push('Luxury finish');
+    if (description.toLowerCase().includes('commercial')) features.push('Commercial grade');
+    return features;
   }
 
   getProduct(id: string): Observable<Product | undefined> {

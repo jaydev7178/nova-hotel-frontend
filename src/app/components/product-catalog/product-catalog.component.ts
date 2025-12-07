@@ -64,8 +64,11 @@ export class ProductCatalogComponent implements OnInit {
   }
 
   addToCart(product: Product): void {
-    this.cartService.addToCart(product, 1);
-    // You could add a toast notification here
+    const success = this.cartService.addToCart(product, 1);
+    if (success) {
+      // You could add a toast notification here
+      console.log('Product added to cart');
+    }
   }
 
   clearFilters(): void {
@@ -112,5 +115,9 @@ export class ProductCatalogComponent implements OnInit {
           return 0;
       }
     });
+  }
+
+  onImageError(event: any): void {
+    event.target.src = 'assets/images/hero-product.jpg';
   }
 }
