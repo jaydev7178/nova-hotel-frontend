@@ -56,9 +56,22 @@ export const routes: Routes = [
       },
       {
         path: 'products',
-        loadComponent: () => import('./components/admin/product-management/product-management.component').then(m => m.ProductManagementComponent),
         canActivate: [AuthGuard],
-        data: { role: 'admin' }
+        data: { role: 'admin' },
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./components/admin/product-management/product-management.component').then(m => m.ProductManagementComponent)
+          },
+          {
+            path: 'create',
+            loadComponent: () => import('./components/create-product.component').then(m => m.CreateProductComponent)
+          },
+          {
+            path: ':id/edit',
+            loadComponent: () => import('./components/edit-product.component').then(m => m.EditProductComponent)
+          }
+        ]
       },
       {
         path: 'orders',

@@ -34,10 +34,21 @@ export class ProductCatalogComponent implements OnInit {
   }
 
   private loadProducts(): void {
-    this.productService.getProducts().subscribe(products => {
-      this.allProducts = products;
-      this.filteredProducts = [...products];
-      this.sortProducts();
+    // Use the public paged products API (no token required) to ensure live data is shown
+    this.productService.getProductsPaged(0, 100, 'name', 'asc').subscribe({
+      next: products => {
+        this.allProducts = products;
+        this.filteredProducts = [...products];
+        this.sortProducts();
+      },
+      error: () => {
+        // Fallback to legacy getProducts (which may return mock data)
+        this.productService.getProducts().subscribe(products => {
+          this.allProducts = products;
+          this.filteredProducts = [...products];
+          this.sortProducts();
+        });
+      }
     });
   }
 

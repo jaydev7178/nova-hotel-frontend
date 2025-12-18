@@ -26,9 +26,18 @@ export class HomeComponent implements OnInit {
   }
 
   private loadFeaturedProducts(): void {
-    this.productService.getProducts().subscribe(products => {
-      this.featuredProducts = products.slice(0, 6); // Show first 6 products as featured
-      this.loading = false;
+    this.productService.getProductsPaged(0, 10, 'name', 'asc').subscribe({
+      next: products => {
+        this.featuredProducts = products.slice(0, 6); // Show first 6 products as featured
+        this.loading = false;
+      },
+      error: () => {
+        // fallback to mock products if API fails
+        this.productService.getProducts().subscribe(products => {
+          this.featuredProducts = products.slice(0, 6);
+          this.loading = false;
+        });
+      }
     });
   }
 
