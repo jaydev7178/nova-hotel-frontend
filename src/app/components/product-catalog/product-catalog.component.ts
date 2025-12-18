@@ -34,10 +34,21 @@ export class ProductCatalogComponent implements OnInit {
   }
 
   private loadProducts(): void {
-    this.productService.getProducts().subscribe(products => {
-      this.allProducts = products;
-      this.filteredProducts = [...products];
-      this.sortProducts();
+    // Use the public paged products API (no token required) to ensure live data is shown
+    this.productService.getProductsPaged(0, 100, 'name', 'asc').subscribe({
+      next: products => {
+        this.allProducts = products;
+        this.filteredProducts = [...products];
+        this.sortProducts();
+      },
+      error: () => {
+        // Fallback to legacy getProducts (which may return mock data)
+        this.productService.getProducts().subscribe(products => {
+          this.allProducts = products;
+          this.filteredProducts = [...products];
+          this.sortProducts();
+        });
+      }
     });
   }
 
@@ -64,8 +75,11 @@ export class ProductCatalogComponent implements OnInit {
   }
 
   addToCart(product: Product): void {
-    this.cartService.addToCart(product, 1);
-    // You could add a toast notification here
+    const success = this.cartService.addToCart(product, 1);
+    if (success) {
+      // You could add a toast notification here
+      console.log('Product added to cart');
+    }
   }
 
   clearFilters(): void {
@@ -112,5 +126,9 @@ export class ProductCatalogComponent implements OnInit {
           return 0;
       }
     });
+  }
+
+  onImageError(event: any): void {
+    event.target.src = 'assets/images/hero-product.jpg';
   }
 }

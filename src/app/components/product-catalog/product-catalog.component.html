@@ -83,7 +83,8 @@
             <div class="position-relative">
               <img [src]="product.images[0]" 
                    [alt]="product.name" 
-                   class="card-img-top">
+                   class="card-img-top"
+                   (error)="onImageError($event)">
               <div class="position-absolute top-0 end-0 p-2">
                 <span class="badge bg-success" *ngIf="product.stock > 0">
                   {{ product.stock }} in stock
@@ -139,7 +140,8 @@
             <div class="col-md-2">
               <img [src]="product.images[0]" 
                    [alt]="product.name" 
-                   class="img-fluid rounded">
+                   class="img-fluid rounded"
+                   (error)="onImageError($event)">
             </div>
             
             <div class="col-md-4">

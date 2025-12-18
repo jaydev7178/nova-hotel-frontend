@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, of, throwError } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Product, ProductCategory } from '../models/product.model';
+import { environment } from '../../environments/environment';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-  private apiUrl = 'api/products'; // Replace with actual API endpoint
+  private apiUrl = `${environment.apiUrl}/products`;
 
   // Mock data for demonstration
   private mockProducts: Product[] = [
@@ -345,18 +348,100 @@ export class ProductService {
     }
   ];
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
 
   getProducts(): Observable<Product[]> {
-    // In a real application, this would make an HTTP request
-    // return this.http.get<Product[]>(this.apiUrl);
-    return of(this.mockProducts);
+    const token = this.authService.getToken();
+    if (!token) {
+      return of(this.mockProducts);
+    }
+    
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    
+    return this.http.get<any>(`${this.apiUrl}?page=0&size=100&sortBy=name&sortDir=asc`, { headers })
+      .pipe(
+        map(response => {
+          return response.content.map((apiProduct: any) => this.mapApiProductToProduct(apiProduct));
+        })
+      ).pipe(
+        map(products => products.length > 0 ? products : this.mockProducts)
+      );
+  }
+
+  /**
+   * Fetch products using paged API and optional token override.
+   * If tokenOverride is provided it will be used instead of the stored auth token.
+   */
+  getProductsPaged(page = 0, size = 10, sortBy = 'name', sortDir = 'asc', tokenOverride?: string): Observable<Product[]> {
+    const token = tokenOverride ?? this.authService.getToken();
+
+    const headers = token ? new HttpHeaders({ 'Authorization': `Bearer ${token}` }) : undefined;
+    const url = `${this.apiUrl}?page=${page}&size=${size}&sortBy=${sortBy}&sortDir=${sortDir}`;
+    const options: any = {};
+    if (headers) options.headers = headers;
+
+    return this.http.get<any>(url, options).pipe(
+      map(response => {
+        const body: any = response as any;
+        return (body?.content || []).map((apiProduct: any) => this.mapApiProductToProduct(apiProduct));
+      })
+    );
+  }
+
+  private mapApiProductToProduct(apiProduct: any): Product {
+    return {
+      id: apiProduct.id.toString(),
+      name: apiProduct.name,
+      description: apiProduct.description,
+      price: apiProduct.price,
+      images: apiProduct.imageUrl ? [apiProduct.imageUrl] : ['assets/images/hero-product.jpg'],
+      category: this.getCategoryFromSku(apiProduct.sku),
+      features: this.generateFeaturesFromDescription(apiProduct.description),
+      stock: apiProduct.stockQuantity,
+      isActive: apiProduct.isActive,
+      createdAt: new Date(apiProduct.createdAt),
+      updatedAt: new Date(apiProduct.updatedAt),
+      specifications: {
+        design: 'Hotel Standard'
+      }
+    };
+  }
+
+  private getCategoryFromSku(sku: string): string {
+    if (sku.startsWith('TOI')) return 'Toiletries';
+    if (sku.startsWith('BAT')) return 'Bathroom';
+    if (sku.startsWith('BED')) return 'Bedroom';
+    if (sku.startsWith('KIT')) return 'Kitchen';
+    if (sku.startsWith('CLE')) return 'Cleaning';
+    if (sku.startsWith('OFF')) return 'Office';
+    if (sku.startsWith('MAI')) return 'Maintenance';
+    return 'General';
+  }
+
+  private generateFeaturesFromDescription(description: string): string[] {
+    const features = ['Premium quality', 'Hotel standard', 'Durable construction'];
+    if (description.toLowerCase().includes('heavy-duty')) features.push('Heavy-duty design');
+    if (description.toLowerCase().includes('luxury')) features.push('Luxury finish');
+    if (description.toLowerCase().includes('commercial')) features.push('Commercial grade');
+    return features;
   }
 
   getProduct(id: string): Observable<Product | undefined> {
-    // return this.http.get<Product>(`${this.apiUrl}/${id}`);
-    const product = this.mockProducts.find(p => p.id === id);
-    return of(product);
+    const token = this.authService.getToken();
+    if (!token) {
+      const product = this.mockProducts.find(p => p.id === id);
+      return of(product);
+    }
+
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    return this.http.get<any>(`${this.apiUrl}/${id}`, { headers }).pipe(
+      map(apiProduct => this.mapApiProductToProduct(apiProduct))
+    );
   }
 
   getProductsByCategory(category: string): Observable<Product[]> {
@@ -366,8 +451,22 @@ export class ProductService {
   }
 
   getCategories(): Observable<ProductCategory[]> {
-    // return this.http.get<ProductCategory[]>(`${this.apiUrl}/categories`);
-    return of(this.mockCategories);
+    const token = this.authService.getToken();
+    if (!token) {
+      return of(this.mockCategories);
+    }
+    
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    return this.http.get<any[]>(`${environment.apiUrl}/categories`, { headers }).pipe(
+      map(categories => 
+        categories.map(cat => ({
+          id: cat.id?.toString() || '',
+          name: cat.name || '',
+          description: cat.description || '',
+          image: cat.image || 'assets/images/category-default.jpg'
+        }))
+      )
+    );
   }
 
   searchProducts(query: string): Observable<Product[]> {
@@ -391,27 +490,175 @@ export class ProductService {
     return of(newProduct);
   }
 
-  updateProduct(id: string, product: Partial<Product>): Observable<Product> {
-    // return this.http.put<Product>(`${this.apiUrl}/${id}`, product);
-    const index = this.mockProducts.findIndex(p => p.id === id);
-    if (index !== -1) {
-      this.mockProducts[index] = {
-        ...this.mockProducts[index],
-        ...product,
-        updatedAt: new Date()
+  // Backwards-compatible alias used by some components
+  createProduct(payload: any): Observable<any> {
+    const token = this.authService.getToken();
+    if (!token) {
+      // Map payload to mock product shape and persist
+      const category = this.mockCategories.find(c => c.id === (payload.categoryId?.toString() || ''));
+      const productToAdd: Omit<Product, 'id' | 'createdAt' | 'updatedAt'> = {
+        name: payload.name,
+        description: payload.description,
+        price: payload.price,
+        images: [],
+        category: category?.name || 'General',
+        features: [],
+        stock: payload.stockQuantity || 0,
+        isActive: payload.isActive ?? true,
+        specifications: {}
       };
-      return of(this.mockProducts[index]);
+      return this.addProduct(productToAdd);
     }
-    throw new Error('Product not found');
+
+    // Use admin endpoint when token is available
+    return this.adminCreateProduct(payload);
+  }
+
+  updateProduct(id: string, payload: any): Observable<any> {
+    const token = this.authService.getToken();
+    if (!token) {
+      const index = this.mockProducts.findIndex(p => p.id === id);
+      if (index !== -1) {
+        this.mockProducts[index] = {
+          ...this.mockProducts[index],
+          ...payload,
+          updatedAt: new Date()
+        };
+        return of(this.mockProducts[index]);
+      }
+      return throwError(() => new Error('Product not found'));
+    }
+
+    return this.adminUpdateProduct(id, payload);
   }
 
   deleteProduct(id: string): Observable<void> {
-    // return this.http.delete<void>(`${this.apiUrl}/${id}`);
-    const index = this.mockProducts.findIndex(p => p.id === id);
-    if (index !== -1) {
-      this.mockProducts.splice(index, 1);
-      return of(void 0);
+    const token = this.authService.getToken();
+    if (!token) {
+      const strId = id?.toString();
+      const index = this.mockProducts.findIndex(p => p.id === strId);
+      if (index !== -1) {
+        this.mockProducts.splice(index, 1);
+        return of(void 0);
+      }
+      return throwError(() => new Error('Product not found'));
     }
-    throw new Error('Product not found');
+
+    return this.adminDeleteProduct(id).pipe(
+      map(() => void 0)
+    );
+  }
+
+  adminDeleteProduct(id: string): Observable<any> {
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    return this.http.delete(`${environment.apiUrl}/admin/products/${id}`, { headers });
+  }
+
+  // --- Admin-specific endpoints / helpers ---
+  adminCreateProduct(payload: any): Observable<any> {
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+
+    // If payload contains files, send multipart/form-data
+    if (payload && (payload.coverImage || payload.galleryImages)) {
+      const fd = new FormData();
+      if (payload.name) fd.append('name', payload.name.toString());
+      if (payload.description) fd.append('description', payload.description.toString());
+      if (payload.price !== undefined) fd.append('price', payload.price.toString());
+      if (payload.stockQuantity !== undefined) fd.append('stockQuantity', payload.stockQuantity.toString());
+      if (payload.categoryId !== undefined) fd.append('categoryId', payload.categoryId.toString());
+      if (payload.isActive !== undefined) fd.append('isActive', payload.isActive.toString());
+
+      if (payload.coverImage && payload.coverImage instanceof File) {
+        fd.append('coverImage', payload.coverImage, payload.coverImage.name);
+      }
+
+      if (payload.galleryImages) {
+        const files = Array.isArray(payload.galleryImages) ? payload.galleryImages : Array.from(payload.galleryImages);
+        files.forEach((f: File) => fd.append('galleryImages', f, f.name));
+      }
+
+      // return upload events so caller can track progress
+      return this.http.post(`${environment.apiUrl}/admin/products`, fd, { headers, reportProgress: true, observe: 'events' as const });
+    }
+
+    // Default JSON body
+    const jsonHeaders = headers.set('Content-Type', 'application/json');
+    return this.http.post(`${environment.apiUrl}/admin/products`, payload, { headers: jsonHeaders });
+  }
+
+  adminUpdateProduct(id: string, payload: any): Observable<any> {
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+
+    // If payload contains files, send multipart/form-data
+    if (payload && (payload.coverImage || payload.galleryImages)) {
+      const fd = new FormData();
+      if (payload.name) fd.append('name', payload.name.toString());
+      if (payload.description) fd.append('description', payload.description.toString());
+      if (payload.price !== undefined) fd.append('price', payload.price.toString());
+      if (payload.stockQuantity !== undefined) fd.append('stockQuantity', payload.stockQuantity.toString());
+      if (payload.categoryId !== undefined) fd.append('categoryId', payload.categoryId.toString());
+      if (payload.isActive !== undefined) fd.append('isActive', payload.isActive.toString());
+
+      if (payload.coverImage && payload.coverImage instanceof File) {
+        fd.append('coverImage', payload.coverImage, payload.coverImage.name);
+      }
+
+      if (payload.galleryImages) {
+        const files = Array.isArray(payload.galleryImages) ? payload.galleryImages : Array.from(payload.galleryImages);
+        files.forEach((f: File) => fd.append('galleryImages', f, f.name));
+      }
+
+      // return upload events so caller can track progress
+      return this.http.put(`${environment.apiUrl}/admin/products/${id}`, fd, { headers, reportProgress: true, observe: 'events' as const });
+    }
+
+    const jsonHeaders = headers.set('Content-Type', 'application/json');
+    return this.http.put(`${environment.apiUrl}/admin/products/${id}`, payload, { headers: jsonHeaders });
+  }
+
+  adminActivateProduct(id: string): Observable<any> {
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    return this.http.put(`${environment.apiUrl}/admin/products/${id}/activate`, {}, { headers });
+  }
+
+  adminDeactivateProduct(id: string): Observable<any> {
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    return this.http.put(`${environment.apiUrl}/admin/products/${id}/deactivate`, {}, { headers });
+  }
+
+  uploadCoverImage(categoryId: string | number, productId: string | number, file: File): Observable<any> {
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    const fd = new FormData();
+    fd.append('file', file, file.name);
+    return this.http.post(`${environment.apiUrl}/admin/categories/${categoryId}/products/${productId}/images/cover`, fd, { headers });
+  }
+
+  uploadGalleryImages(categoryId: string | number, productId: string | number, files: File[]): Observable<any> {
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    const fd = new FormData();
+    files.forEach(f => fd.append('files', f, f.name));
+    return this.http.post(`${environment.apiUrl}/admin/categories/${categoryId}/products/${productId}/images/gallery`, fd, { headers });
+  }
+
+  updateProductImages(productId: string | number, keepUrls: string[] = [], files: File[] = []): Observable<any> {
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    const fd = new FormData();
+    if (keepUrls.length) fd.append('keepUrls', keepUrls.join(','));
+    files.forEach(f => fd.append('files', f, f.name));
+    return this.http.put(`${environment.apiUrl}/products/${productId}/images`, fd, { headers });
+  }
+
+  deleteProductImage(productId: string | number, imageUrl: string): Observable<any> {
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    return this.http.delete(`${environment.apiUrl}/products/${productId}/images`, { headers, params: { imageUrl } });
   }
 }

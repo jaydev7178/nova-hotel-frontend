@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { AuthService, User } from '../../../services/auth.service';
 import { CartService } from '../../../services/cart.service';
 import { Observable } from 'rxjs';
 
@@ -55,11 +56,33 @@ import { Observable } from 'rxjs';
                 </span>
               </a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" routerLink="/admin">
-                <i class="fas fa-user-cog"></i>
-                Admin
+            
+            <!-- User Authentication -->
+            <li class="nav-item" *ngIf="!(isLoggedIn$ | async)">
+              <a class="nav-link" routerLink="/login">
+                <i class="fas fa-sign-in-alt"></i>
+                Login
               </a>
+            </li>
+            
+            <li class="nav-item dropdown" *ngIf="isLoggedIn$ | async">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                <i class="fas fa-user"></i>
+                {{ (currentUser$ | async)?.username }}
+              </a>
+              <ul class="dropdown-menu">
+                <li *ngIf="isAdmin()">
+                  <a class="dropdown-item" routerLink="/admin">
+                    <i class="fas fa-user-cog me-2"></i>Admin Panel
+                  </a>
+                </li>
+                <li><hr class="dropdown-divider" *ngIf="isAdmin()"></li>
+                <li>
+                  <a class="dropdown-item" href="#" (click)="logout()">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                  </a>
+                </li>
+              </ul>
             </li>
           </ul>
         </div>
@@ -68,12 +91,30 @@ import { Observable } from 'rxjs';
   `,
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
+  currentUser$: Observable<User | null>;
+  isLoggedIn$: Observable<boolean>;
   cartItemCount = 0;
 
-  constructor(private cartService: CartService) {
+  constructor(
+    private authService: AuthService,
+    private cartService: CartService
+  ) {
+    this.currentUser$ = this.authService.currentUser$;
+    this.isLoggedIn$ = this.authService.isLoggedIn$;
+    
     this.cartService.getCartItems().subscribe(items => {
       this.cartItemCount = items.reduce((total, item) => total + item.quantity, 0);
     });
+  }
+
+  ngOnInit(): void {}
+
+  logout(): void {
+    this.authService.logout();
+  }
+
+  isAdmin(): boolean {
+    return this.authService.isAdmin();
   }
 }
