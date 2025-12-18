@@ -53,13 +53,6 @@ import { AuthService } from '../../services/auth.service';
                 </button>
               </form>
               
-              <div class="mt-4 text-center">
-                <small class="text-muted">
-                  Demo Credentials:<br>
-                  User: jaydev&#64;gmail.com / user123<br>
-                  Admin: admin&#64;novahotelsupplies.com / admin123
-                </small>
-              </div>
             </div>
           </div>
         </div>
