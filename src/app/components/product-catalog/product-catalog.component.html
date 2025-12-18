@@ -1,0 +1,209 @@
+<div class="container py-5">
+  <!-- Page Header -->
+  <div class="row mb-5">
+    <div class="col-12 text-center">
+      <h1 class="display-4 fw-bold text-dark mb-3">Product Catalog</h1>
+      <p class="lead text-muted">Discover our premium collection of hotel supplies and amenities</p>
+    </div>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="row mb-4">
+    <div class="col-lg-8">
+      <div class="row g-3">
+        <!-- Search Bar -->
+        <div class="col-md-6">
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="fas fa-search"></i>
+            </span>
+            <input 
+              type="text" 
+              class="form-control" 
+              placeholder="Search products..."
+              [(ngModel)]="searchQuery"
+              (input)="onSearch()">
+          </div>
+        </div>
+        
+        <!-- Category Filter -->
+        <div class="col-md-6">
+          <select 
+            class="form-select" 
+            [(ngModel)]="selectedCategory"
+            (change)="onCategoryFilter()">
+            <option value="">All Categories</option>
+            <option *ngFor="let category of categories" [value]="category.name">
+              {{ category.name }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+    
+    <!-- View Options -->
+    <div class="col-lg-4">
+      <div class="d-flex justify-content-lg-end gap-2">
+        <div class="btn-group" role="group">
+          <button 
+            type="button" 
+            class="btn btn-outline-primary"
+            [class.active]="viewMode === 'grid'"
+            (click)="setViewMode('grid')">
+            <i class="fas fa-th"></i>
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-outline-primary"
+            [class.active]="viewMode === 'list'"
+            (click)="setViewMode('list')">
+            <i class="fas fa-list"></i>
+          </button>
+        </div>
+        <select 
+          class="form-select" 
+          style="width: auto;"
+          [(ngModel)]="sortBy"
+          (change)="onSort()">
+          <option value="name">Sort by Name</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="newest">Newest First</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Products Grid/List -->
+  <div class="row" *ngIf="filteredProducts.length > 0">
+    <div class="col-12" *ngIf="viewMode === 'grid'">
+      <div class="row g-4">
+        <div class="col-lg-4 col-md-6" *ngFor="let product of filteredProducts">
+          <div class="card product-card h-100">
+            <div class="position-relative">
+              <img [src]="product.images[0]" 
+                   [alt]="product.name" 
+                   class="card-img-top"
+                   (error)="onImageError($event)">
+              <div class="position-absolute top-0 end-0 p-2">
+                <span class="badge bg-success" *ngIf="product.stock > 0">
+                  {{ product.stock }} in stock
+                </span>
+                <span class="badge bg-danger" *ngIf="product.stock === 0">
+                  Out of stock
+                </span>
+              </div>
+            </div>
+            
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">{{ product.name }}</h5>
+              <p class="card-text text-muted flex-grow-1">
+                {{ product.description.substring(0, 100) }}...
+              </p>
+              
+              <div class="mb-2">
+                <span class="badge bg-secondary">{{ product.category }}</span>
+              </div>
+              
+              <div class="mb-3">
+                <small class="text-muted">
+                  {{ product.features[0] }}
+                </small>
+              </div>
+              
+              <div class="d-flex justify-content-between align-items-center mt-auto">
+                <span class="price h5 mb-0">${{ product.price | number:'1.2-2' }}</span>
+                <div class="btn-group">
+                  <button 
+                    class="btn btn-outline-primary btn-sm"
+                    [disabled]="product.stock === 0"
+                    (click)="addToCart(product)">
+                    <i class="fas fa-cart-plus"></i>
+                  </button>
+                  <a [routerLink]="['/product', product.id]" 
+                     class="btn btn-primary btn-sm">
+                    View Details
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- List View -->
+    <div class="col-12" *ngIf="viewMode === 'list'">
+      <div class="list-group">
+        <div class="list-group-item" *ngFor="let product of filteredProducts">
+          <div class="row align-items-center">
+            <div class="col-md-2">
+              <img [src]="product.images[0]" 
+                   [alt]="product.name" 
+                   class="img-fluid rounded"
+                   (error)="onImageError($event)">
+            </div>
+            
+            <div class="col-md-4">
+              <h6 class="mb-1">{{ product.name }}</h6>
+              <p class="text-muted mb-2 small">
+                {{ product.description.substring(0, 150) }}...
+              </p>
+              <div class="mb-2">
+                <span class="badge bg-secondary">{{ product.category }}</span>
+              </div>
+            </div>
+            
+            <div class="col-md-2">
+              <div class="stock-status">
+                <span class="badge bg-success" *ngIf="product.stock > 0">
+                  {{ product.stock }} in stock
+                </span>
+                <span class="badge bg-danger" *ngIf="product.stock === 0">
+                  Out of stock
+                </span>
+              </div>
+            </div>
+            
+            <div class="col-lg-4 text-lg-end">
+              <div class="price h4 text-primary mb-3">
+                ${{ product.price | number:'1.2-2' }}
+              </div>
+              <div class="btn-group">
+                <button 
+                  class="btn btn-outline-primary btn-sm"
+                  [disabled]="product.stock === 0"
+                  (click)="addToCart(product)">
+                  <i class="fas fa-cart-plus me-1"></i>
+                  Add to Cart
+                </button>
+                <a [routerLink]="['/product', product.id]" 
+                   class="btn btn-primary btn-sm">
+                  <i class="fas fa-eye me-1"></i>
+                  View Details
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Products Found -->
+  <div class="row" *ngIf="filteredProducts.length === 0">
+    <div class="col-12 text-center py-5">
+      <div class="empty-state">
+        <i class="fas fa-search fa-4x text-muted mb-4"></i>
+        <h4 class="text-muted mb-3">No Products Found</h4>
+        <p class="text-muted mb-4">
+          We couldn't find any products matching your criteria. Try adjusting your search or filters.
+        </p>
+        <button class="btn btn-primary" (click)="clearFilters()">
+          <i class="fas fa-refresh me-2"></i>
+          Clear Filters
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

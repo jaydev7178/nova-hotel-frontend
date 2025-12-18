@@ -1,0 +1,222 @@
+<!-- Page Header -->
+<div class="page-header mb-4">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h1 class="h3 fw-bold text-dark mb-2">Order Approval</h1>
+      <p class="text-muted mb-0">Review and approve pending orders</p>
+    </div>
+    <div class="btn-group" *ngIf="selectedOrders.length > 0">
+      <button class="btn btn-success" (click)="approveSelected()">
+        <i class="fas fa-check me-2"></i>
+        Approve Selected ({{ selectedOrders.length }})
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Stats Card -->
+<div class="row mb-4">
+  <div class="col-lg-3">
+    <div class="stats-card">
+      <div class="stats-icon">
+        <i class="fas fa-dollar-sign fa-2x text-info"></i>
+      </div>
+      <div class="stats-content">
+        <h3 class="stats-number">${{ pendingRevenue | number:'1.2-2' }}</h3>
+        <p class="stats-label">Pending Revenue</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <!-- Orders List -->
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-body">
+        <div class="table-responsive" *ngIf="pendingOrders.length > 0">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>
+                  <div class="form-check">
+                    <input class="form-check-input" 
+                           type="checkbox" 
+                           [(ngModel)]="selectAll"
+                           (change)="toggleSelectAll()">
+                  </div>
+                </th>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Stock Status</th>
+                <th>Total</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let order of pendingOrders" 
+                  [class.table-active]="selectedOrder?.id === order.id">
+                <td>
+                  <div class="form-check">
+                    <input class="form-check-input" 
+                           type="checkbox" 
+                           [checked]="order.selected"
+                           (change)="toggleOrderSelection(order)">
+                  </div>
+                </td>
+                <td class="fw-bold">{{ order.id }}</td>
+                <td>
+                  <div>{{ order.customerInfo.firstName }} {{ order.customerInfo.lastName }}</div>
+                  <small class="text-muted">{{ order.customerInfo.email }}</small>
+                </td>
+                <td>
+                  <div class="stock-status">
+                    <div *ngFor="let item of order.items" class="mb-1">
+                      <span class="badge" [ngClass]="getStockBadgeClass(item.product.stock, item.quantity)">
+                        {{ item.product.name }}: {{ item.product.stock }} / {{ item.quantity }}
+                      </span>
+                    </div>
+                  </div>
+                </td>
+                <td class="fw-bold">${{ order.totalAmount | number:'1.2-2' }}</td>
+                <td>
+                  <div>{{ order.createdAt | date:'short' }}</div>
+                  <small class="text-muted">{{ getTimeAgo(order.createdAt) }}</small>
+                </td>
+                <td>
+                  <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary" (click)="selectOrder(order)">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-outline-success" (click)="approveOrder(order)">
+                      <i class="fas fa-check"></i>
+                    </button>
+                    <button class="btn btn-outline-danger" (click)="rejectOrder(order)">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="text-center py-5" *ngIf="pendingOrders.length === 0">
+          <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+          <h5 class="text-success mb-3">All Orders Processed!</h5>
+          <p class="text-muted">No pending orders require approval at this time.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Details -->
+  <div class="col-lg-4" *ngIf="selectedOrder">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">Order Review</h5>
+      </div>
+      <div class="card-body">
+        <!-- Customer Info -->
+        <div class="mb-4">
+          <h6 class="fw-bold mb-3">Customer Information</h6>
+          <div class="customer-info">
+            <div class="mb-2">
+              <strong>{{ selectedOrder.customerInfo.firstName }} {{ selectedOrder.customerInfo.lastName }}</strong>
+            </div>
+            <div class="mb-2">{{ selectedOrder.customerInfo.email }}</div>
+            <div class="mb-2">{{ selectedOrder.customerInfo.phone }}</div>
+            <div *ngIf="selectedOrder.customerInfo.company" class="mb-2">
+              {{ selectedOrder.customerInfo.company }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Items with Stock Check -->
+        <div class="mb-4">
+          <h6 class="fw-bold mb-3">Order Items & Stock</h6>
+          <div class="order-items">
+            <div class="order-item mb-3" *ngFor="let item of selectedOrder.items">
+              <div class="d-flex align-items-start">
+                <img [src]="item.product.images[0]" 
+                     [alt]="item.product.name" 
+                     class="item-thumb me-3">
+                <div class="flex-grow-1">
+                  <h6 class="mb-1">{{ item.product.name }}</h6>
+                  <small class="text-muted">{{ item.product.description.substring(0, 50) }}...</small>
+                  <div class="mt-2">
+                    <span class="badge bg-secondary me-2">Qty: {{ item.quantity }}</span>
+                    <span class="badge" [ngClass]="getStockBadgeClass(item.product.stock, item.quantity)">
+                      Stock: {{ item.product.stock }}
+                    </span>
+                    <span class="fw-bold ms-2">${{ (item.product.price * item.quantity) | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="stock-status mt-1">
+                    <small [ngClass]="getStockStatusClass(item.product.stock, item.quantity)">
+                      <i class="fas" [ngClass]="getStockIcon(item.product.stock, item.quantity)"></i>
+                      {{ getStockMessage(item.product.stock, item.quantity) }}
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="mb-4">
+          <h6 class="fw-bold mb-3">Order Summary</h6>
+          <div class="order-summary">
+            <div class="d-flex justify-content-between mb-2">
+              <span>Subtotal:</span>
+              <span>${{ getSubtotal(selectedOrder) | number:'1.2-2' }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Shipping:</span>
+              <span class="text-success">Free</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Tax:</span>
+              <span>${{ getTax(selectedOrder) | number:'1.2-2' }}</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between h5 mb-3">
+              <span class="fw-bold">Total:</span>
+              <span class="fw-bold text-primary">${{ selectedOrder.totalAmount | number:'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Approval Actions -->
+        <div class="approval-actions">
+          <div class="d-grid gap-2">
+            <button class="btn btn-success btn-lg" (click)="approveOrder(selectedOrder)">
+              <i class="fas fa-check me-2"></i>
+              Approve Order
+            </button>
+            <button class="btn btn-danger btn-lg" (click)="rejectOrder(selectedOrder)">
+              <i class="fas fa-times me-2"></i>
+              Reject Order
+            </button>
+            <button class="btn btn-outline-secondary" (click)="selectedOrder = undefined">
+              <i class="fas fa-times me-2"></i>
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Order Selected -->
+  <div class="col-lg-4" *ngIf="!selectedOrder">
+    <div class="card">
+      <div class="card-body text-center py-5">
+        <i class="fas fa-clipboard-check fa-3x text-muted mb-3"></i>
+        <h6 class="text-muted">Select an order to review</h6>
+        <p class="text-muted small">Click on any pending order to review its details and stock availability.</p>
+      </div>
+    </div>
+  </div>
+</div>

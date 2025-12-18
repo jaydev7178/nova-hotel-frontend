@@ -1,0 +1,135 @@
+$primary-color: #2c5aa0;
+
+.error-content {
+  .error-icon {
+    .fa-exclamation-triangle {
+      animation: pulse 2s infinite;
+    }
+  }
+  
+  .display-1 {
+    font-size: 8rem;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--primary-color);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .display-5 {
+    color: var(--text-dark);
+    margin-bottom: 1.5rem;
+  }
+  
+  .lead {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+  }
+  
+  .action-buttons {
+    .btn {
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      }
+    }
+  }
+  
+  .helpful-links {
+    h5 {
+      color: var(--text-dark);
+      font-weight: 600;
+    }
+    
+    a {
+      color: var(--primary-color);
+      font-weight: 500;
+      transition: color 0.3s ease;
+      
+      &:hover {
+        color: darken($primary-color, 10%);
+        text-decoration: underline !important;
+      }
+      
+      .fas {
+        opacity: 0.8;
+      }
+    }
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .error-content {
+    .display-1 {
+      font-size: 6rem;
+    }
+    
+    .display-5 {
+      font-size: 2rem;
+    }
+    
+    .lead {
+      font-size: 1.1rem;
+    }
+    
+    .action-buttons {
+      .btn {
+        display: block;
+        width: 100%;
+        margin-bottom: 1rem;
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+    
+    .helpful-links {
+      .row {
+        .col-md-4 {
+          text-align: center;
+          margin-bottom: 1rem;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .error-content {
+    .display-1 {
+      font-size: 4rem;
+    }
+    
+    .display-5 {
+      font-size: 1.5rem;
+    }
+    
+    .lead {
+      font-size: 1rem;
+    }
+    
+    .error-icon .fa-exclamation-triangle {
+      font-size: 3rem;
+    }
+  }
+}
