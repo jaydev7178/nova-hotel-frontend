@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
 import { Product, ProductCategory } from '../../models/product.model';
+import { encodeId } from '../../utils/id-encoder.util';
 
 @Component({
   selector: 'app-product-catalog',
@@ -130,5 +131,9 @@ export class ProductCatalogComponent implements OnInit {
 
   onImageError(event: any): void {
     event.target.src = 'assets/images/hero-product.jpg';
+  }
+
+  getEncodedProductId(productId: string | number): string {
+    return encodeId(productId);
   }
 }

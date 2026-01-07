@@ -141,7 +141,7 @@
             
             <div class="d-flex justify-content-between align-items-center mt-auto">
               <span class="price">${{ product.price | number:'1.2-2' }}</span>
-              <a [routerLink]="['/product', product.id]" 
+              <a [routerLink]="['/product', getEncodedProductId(product.id)]" 
                  class="btn btn-primary btn-sm">
                 View Details
               </a>

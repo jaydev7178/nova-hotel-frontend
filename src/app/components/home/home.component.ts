@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { ProductService } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
 import { Product } from '../../models/product.model';
+import { encodeId } from '../../utils/id-encoder.util';
 
 @Component({
   selector: 'app-home',
@@ -44,5 +45,9 @@ export class HomeComponent implements OnInit {
   addToCart(product: Product): void {
     this.cartService.addToCart(product, 1);
     // You could add a toast notification here
+  }
+
+  getEncodedProductId(productId: string | number): string {
+    return encodeId(productId);
   }
 }

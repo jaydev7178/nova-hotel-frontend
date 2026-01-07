@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
 import { Product } from '../../models/product.model';
+import { encodeId, decodeId } from '../../utils/id-encoder.util';
 
 @Component({
   selector: 'app-product-detail',
@@ -27,11 +28,15 @@ export class ProductDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      const productId = params['id'];
-      if (productId) {
-        this.loadProduct(productId);
-        this.loadRelatedProducts();
+      const encodedId = params['id'];
+      const productId = decodeId(encodedId);
+      if (!productId) {
+        // Invalid or missing ID, redirect to products page
+        this.router.navigate(['/products']);
+        return;
       }
+      this.loadProduct(productId);
+      this.loadRelatedProducts();
     });
   }
 
@@ -79,6 +84,11 @@ export class ProductDetailComponent implements OnInit {
   }
 
   viewRelatedProduct(productId: string): void {
-    this.router.navigate(['/product', productId]);
+    this.router.navigate(['/product', encodeId(productId)]);
+  }
+
+  // Public method for template use
+  encodeId(id: string | number): string {
+    return encodeId(id);
   }
 }

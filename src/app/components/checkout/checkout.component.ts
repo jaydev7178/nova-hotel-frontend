@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { CartService } from '../../services/cart.service';
 import { OrderService } from '../../services/order.service';
 import { CartItem, Order, CustomerInfo, PaymentInfo, OrderStatus, PaymentMethod, PaymentStatus } from '../../models/product.model';
+import { encodeId } from '../../utils/id-encoder.util';
 
 @Component({
   selector: 'app-checkout',
@@ -89,7 +90,7 @@ export class CheckoutComponent implements OnInit {
 
       this.orderService.createOrder(order).subscribe(createdOrder => {
         this.cartService.clearCart();
-        this.router.navigate(['/order-confirmation', createdOrder.id]);
+        this.router.navigate(['/order-confirmation', encodeId(createdOrder.id)]);
       });
     }
   }

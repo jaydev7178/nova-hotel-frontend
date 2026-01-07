@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { HttpEventType } from '@angular/common/http';
 import { ProductService } from '../services/product.service';
 import { Product, ProductCategory } from '../models/product.model';
+import { encodeId, decodeId } from '../utils/id-encoder.util';
 
 @Component({
   selector: 'app-edit-product',
@@ -42,9 +43,15 @@ export class EditProductComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.productId = this.route.snapshot.paramMap.get('id');
+    const encodedId = this.route.snapshot.paramMap.get('id');
+    this.productId = decodeId(encodedId);
+    if (!this.productId) {
+      // Invalid or missing ID, redirect immediately
+      this.router.navigate(['/admin/products']);
+      return;
+    }
     this.loadCategories();
-    if (this.productId) this.loadProduct(this.productId);
+    this.loadProduct(this.productId);
   }
 
   private loadCategories(): void {

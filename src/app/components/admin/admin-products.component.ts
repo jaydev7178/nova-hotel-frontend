@@ -4,6 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { ProductService } from '../../services/product.service';
 import { Product, ProductCategory } from '../../models/product.model';
 import { ToastrService } from 'ngx-toastr';
+import { encodeId } from '../../utils/id-encoder.util';
 
 @Component({
     selector: 'app-admin-products',
@@ -54,7 +55,7 @@ export class AdminProductsComponent implements OnInit {
     }
 
     editProduct(product: Product): void {
-        this.router.navigate(['/admin/products', product.id, 'edit']);
+        this.router.navigate(['/admin/products', encodeId(product.id), 'edit']);
     }
 
     deleteProduct(product: Product): void {

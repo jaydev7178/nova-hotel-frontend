@@ -201,7 +201,7 @@
               </p>
               <div class="d-flex justify-content-between align-items-center mt-auto">
                 <span class="price">${{ relatedProduct.price | number:'1.2-2' }}</span>
-                <a [routerLink]="['/product', relatedProduct.id]" 
+                <a [routerLink]="['/product', encodeId(relatedProduct.id)]" 
                    class="btn btn-primary btn-sm">
                   View
                 </a>

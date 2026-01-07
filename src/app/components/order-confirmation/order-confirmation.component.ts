@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { OrderService } from '../../services/order.service';
 import { Order } from '../../models/product.model';
+import { decodeId } from '../../utils/id-encoder.util';
 
 @Component({
   selector: 'app-order-confirmation',
@@ -23,10 +24,14 @@ export class OrderConfirmationComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      this.orderId = params['id'];
-      if (this.orderId) {
-        this.loadOrder(this.orderId);
+      const encodedId = params['id'];
+      this.orderId = decodeId(encodedId);
+      if (!this.orderId) {
+        // Invalid or missing ID, redirect to home
+        this.router.navigate(['/home']);
+        return;
       }
+      this.loadOrder(this.orderId);
     });
   }
 
